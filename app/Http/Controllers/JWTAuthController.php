@@ -19,6 +19,11 @@ class JWTAuthController extends Controller
                 'email' => 'required|string|email|max:255|unique:users,email',
                 'password' => 'required|string|confirmed',
                 'role' => 'required|string|max:5',
+                'schedule_type' => 'required|string|max:20', 
+                'morning_clock_in' => 'required|date_format:H:i', 
+                'morning_clock_out' => 'required|date_format:H:i|after:morning_clock_in', 
+                'afternoon_clock_in' => 'required|date_format:H:i',
+                'afternoon_clock_out' => 'required|date_format:H:i|after:afternoon_clock_in',
             ]);
 
             if ($validator->fails()) {
@@ -28,11 +33,14 @@ class JWTAuthController extends Controller
                 ], 400);
             }
 
-            $user = User::create([
-                'name' => $request->get('name'),
-                'email' => $request->get('email'),
-                'password' => Hash::make($request->get('password')),
-            ]);
+            $user = User::createUser($request);
+
+            if (!$user) {
+                return response()->json([
+                    'error' => 'User creation failed',
+                    'message' => 'Failed to create the user. Please try again.'
+                ], 400);
+            }
 
             $token = JWTAuth::fromUser($user);
 

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\ClockDailyController;
 use App\Http\Controllers\JWTAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,13 +20,21 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 */
 
 Route::post('/login', [JWTAuthController::class, 'login']);
-Route::post('/register', [JWTAuthController::class, 'register']);
+
+Route::group(['middleware' => ['jwt']], function () {
+    Route::post('/clockin', [ClockDailyController::class, 'registerClockIn']);
+
+    Route::get('/today-records', [AttendanceRecordController::class, 'getTodayRecords']);
+});
 
 Route::group(['middleware' => ['jwt', 'admin']], function () {
     Route::post('/logout', [JWTAuthController::class, 'logout']);
+    Route::post('/register', [JWTAuthController::class, 'register']);
+    
 
     Route::get('/teste', function (Request $request) {
         return response()->json(['ok'], 200);
     });
+    
 });
 
