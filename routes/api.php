@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\JWTAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,25 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/login', function (Request $request) {
-    $credentials = $request->only(['email', 'password']);
+Route::post('/login', [JWTAuthController::class, 'login']);
+Route::post('/register', [JWTAuthController::class, 'register']);
 
-    if (!$token = auth()->attempt($credentials)) {
-        return response()->json(['error' => 'Unauthorized'], 401);
-    }
+Route::group(['middleware' => ['jwt', 'admin']], function () {
+    Route::post('/logout', [JWTAuthController::class, 'logout']);
 
-    return response()->json([
-        'data' => [
-            'token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]
-    ]);
-
-});
-
-Route::group(['middleware' => ['api', 'admin']], function () {
     Route::get('/teste', function (Request $request) {
         return response()->json(['ok'], 200);
     });
 });
+
