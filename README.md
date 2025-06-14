@@ -92,7 +92,8 @@ chmod -R 775 exports
 📌 Observações
 O sistema utiliza Laravel 10, PHP 8.1, MySQL, Redis e JWT.
 
-As rotas da API estão documentadas em Documentacao Rotas Api.
+As rotas da API estão documentadas em documentacao_rotas_api.
+[Documentação da API](https://github.com/ElMarcelFarias/pontoapi-laravel10/blob/master/documentacao_rotas_api.md)
 
 Para acessar as rotas protegidas, envie o header:
 
