@@ -85,7 +85,7 @@ Rode as migrations para construir as tabelas no BD
 php artisan migrate
 ```
 
-14. Crie a pasta para relatórios PDF
+Crie a pasta para relatórios PDF
 ```sh
 mkdir exports
 chmod -R 775 exports
