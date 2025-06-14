@@ -95,7 +95,12 @@ Acesse a API
 [http://localhost:8989](http://localhost:8989)
 
 Observações
-O sistema utiliza Laravel 10, PHP 8.1, MySQL, Redis e JWT.
+O sistema utiliza:
+* Laravel 10
+* PHP 8.1
+* MySQL 5.7
+* Redis
+* JWT.
 
 As rotas da API estão documentadas em documentacao_rotas_api.
 [Documentação da API](https://github.com/ElMarcelFarias/pontoapi-laravel10/blob/master/documentacao_rotas_api.md)
