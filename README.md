@@ -1,12 +1,12 @@
 
-# Setup Docker Laravel 10 com PHP 8.1
+# Ponto API
 ### Passo a passo
 Clone Repositório
 ```sh
-git clone -b laravel-10-com-php-8.1 https://github.com/especializati/setup-docker-laravel.git app-laravel
+git clone https://github.com/ElMarcelFarias/pontoapi-laravel10
 ```
 ```sh
-cd app-laravel
+cd pontoapi-laravel10
 ```
 
 
@@ -18,13 +18,13 @@ cp .env.example .env
 
 Atualize as variáveis de ambiente do arquivo .env
 ```dosini
-APP_NAME="Especializa Ti"
+APP_NAME="pontoapi"
 APP_URL=http://localhost:8989
 
 DB_CONNECTION=mysql
 DB_HOST=db
 DB_PORT=3306
-DB_DATABASE=laravel
+DB_DATABASE=pontoapi
 DB_USERNAME=root
 DB_PASSWORD=root
 
@@ -55,12 +55,53 @@ Instale as dependências do projeto
 composer install
 ```
 
+🔐 JWT Authentication (Instale o pacote JWT_
+```sh
+composer require tymon/jwt-auth
+```
+
+Publique a configuração
+```sh
+php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+```
+
+Gere o secret JWT
+```sh
+php artisan jwt:secret
+```
+
+🧾 Geração de PDF (Instale o DomPDF)
+```sh
+composer require barryvdh/laravel-dompdf
+```
+
+12. Crie o link do storage
+```sh
+php artisan storage:link
+```
+
+14. Crie a pasta para relatórios PDF
+```sh
+mkdir exports
+chmod -R 775 exports
+```
+
+✅ Acesse a API
+[http://localhost:8989](http://localhost:8989)
+
+📌 Observações
+O sistema utiliza Laravel 10, PHP 8.1, MySQL, Redis e JWT.
+
+As rotas da API estão documentadas em Documentacao Rotas Api.
+
+Para acessar as rotas protegidas, envie o header:
+
+```sh
+Authorization: Bearer <seu_token_jwt>
+```
 
 Gere a key do projeto Laravel
 ```sh
 php artisan key:generate
 ```
 
-
-Acesse o projeto
-[http://localhost:8989](http://localhost:8989)
