@@ -242,7 +242,7 @@
 
 **Middleware: jwt + admin**
 
-**Descrição**: Faz o download do arquivo PDF gerado anteriormente.
+**Descrição**: Faz o download em cima da url do arquivo PDF gerado anteriormente (URL temporária).
 
 ---
 
