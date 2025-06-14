@@ -55,7 +55,7 @@ Instale as dependências do projeto
 composer install
 ```
 
-JWT Authentication (Instale o pacote JWT_
+JWT Authentication (Instale o pacote JWT)
 ```sh
 composer require tymon/jwt-auth
 ```
