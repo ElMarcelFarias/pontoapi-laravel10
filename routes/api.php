@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\AttendanceReportController;
 use App\Http\Controllers\ClockDailyController;
 use App\Http\Controllers\JWTAuthController;
 use Illuminate\Http\Request;
@@ -30,11 +31,10 @@ Route::group(['middleware' => ['jwt']], function () {
 Route::group(['middleware' => ['jwt', 'admin']], function () {
     Route::post('/logout', [JWTAuthController::class, 'logout']);
     Route::post('/register', [JWTAuthController::class, 'register']);
-    
 
-    Route::get('/teste', function (Request $request) {
-        return response()->json(['ok'], 200);
-    });
+    // Rota protegida para o download do relatório
+    Route::get('/download-report/{fileName}', [AttendanceReportController::class, 'downloadReport'])->name('download.report');
     
+    Route::post('/attendance-report', [AttendanceRecordController::class, 'generateAttendanceReport']);
 });
 

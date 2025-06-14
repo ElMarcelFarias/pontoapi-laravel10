@@ -70,6 +70,27 @@ class AttendanceRecord extends Model
             ->whereDate('attendance_records.date', now()->toDateString())
             ->get();
     }
+
+    /**
+     * Consulta de todos os registros de presença,
+     * com os horários da tabela clock_dailies via INNER JOIN.
+     *
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllRecordsWithClockTimes()
+    {
+        return self::select(
+                'attendance_records.*',
+                'clock_dailies.morning_clock_in',
+                'clock_dailies.morning_clock_out',
+                'clock_dailies.afternoon_clock_in',
+                'clock_dailies.afternoon_clock_out'
+            )
+            ->join('clock_dailies', 'attendance_records.clock_daily_id', '=', 'clock_dailies.id')
+            ->whereDate('attendance_records.date', now()->toDateString())
+            ->get();
+    }
 }
 
 
