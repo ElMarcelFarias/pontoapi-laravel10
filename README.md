@@ -55,7 +55,7 @@ Instale as dependências do projeto
 composer install
 ```
 
-🔐 JWT Authentication (Instale o pacote JWT_
+JWT Authentication (Instale o pacote JWT_
 ```sh
 composer require tymon/jwt-auth
 ```
@@ -70,14 +70,19 @@ Gere o secret JWT
 php artisan jwt:secret
 ```
 
-🧾 Geração de PDF (Instale o DomPDF)
+Geração de PDF (Instale o DomPDF)
 ```sh
 composer require barryvdh/laravel-dompdf
 ```
 
-12. Crie o link do storage
+Crie o link do storage
 ```sh
 php artisan storage:link
+```
+
+Rode as migrations para construir as tabelas no BD
+```sh
+php artisan migrate
 ```
 
 14. Crie a pasta para relatórios PDF
@@ -86,10 +91,10 @@ mkdir exports
 chmod -R 775 exports
 ```
 
-✅ Acesse a API
+Acesse a API
 [http://localhost:8989](http://localhost:8989)
 
-📌 Observações
+Observações
 O sistema utiliza Laravel 10, PHP 8.1, MySQL, Redis e JWT.
 
 As rotas da API estão documentadas em documentacao_rotas_api.
