@@ -94,11 +94,10 @@ chmod -R 775 exports
 Acesse a API
 [http://localhost:8989](http://localhost:8989)
 
-Observações
-O sistema utiliza:
+Requisitos 
 * Laravel 10
 * PHP 8.1
-* MySQL 5.7
+* MySQL 5.7+
 * Redis
 * JWT.
 
