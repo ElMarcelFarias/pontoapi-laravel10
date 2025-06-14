@@ -18,7 +18,7 @@ class JWTAuthController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email',
                 'password' => 'required|string|confirmed',
-                'role' => 'required|string|max:5',
+                'role' => 'required|string|max:12',
                 'schedule_type' => 'required|string|max:20', 
                 'morning_clock_in' => 'required|date_format:H:i', 
                 'morning_clock_out' => 'required|date_format:H:i|after:morning_clock_in', 
