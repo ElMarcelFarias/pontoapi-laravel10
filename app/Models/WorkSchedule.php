@@ -20,6 +20,7 @@ class WorkSchedule extends Model
         'morning_clock_out',
         'afternoon_clock_in',
         'afternoon_clock_out',
+        'interval',
     ];
 
     // Relacionamento com o modelo User

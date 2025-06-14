@@ -25,6 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,6 +46,11 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function workSchedule()
+    {
+        return $this->hasOne(WorkSchedule::class);
+    }
 
     public function getJWTIdentifier() 
     {
@@ -82,6 +88,7 @@ class User extends Authenticatable implements JWTSubject
                 'morning_clock_out' => $request->get('morning_clock_out'),
                 'afternoon_clock_in' => $request->get('afternoon_clock_in'),
                 'afternoon_clock_out' => $request->get('afternoon_clock_out'),
+                'interval' => (int) $request->get('interval'),
             ]);
     
             if (!$workSchedule) {
@@ -95,5 +102,45 @@ class User extends Authenticatable implements JWTSubject
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public static function getAllUsers($perPage) {
+        return User::select(
+            'users.id',
+            'users.name',
+            'users.email',
+            'users.role',
+            'work_schedules.schedule_type',
+            'work_schedules.interval',
+            'work_schedules.morning_clock_in',
+            'work_schedules.morning_clock_out',
+            'work_schedules.afternoon_clock_in',
+            'work_schedules.afternoon_clock_out'
+        )
+        ->join('work_schedules', 'work_schedules.user_id', '=', 'users.id')
+        ->paginate($perPage);
+    }
+
+    public static function getUser($id) {
+       return User::select(
+            'users.id',
+            'users.name',
+            'users.email',
+            'users.role',
+            'work_schedules.schedule_type',
+            'work_schedules.interval',
+            'work_schedules.morning_clock_in',
+            'work_schedules.morning_clock_out',
+            'work_schedules.afternoon_clock_in',
+            'work_schedules.afternoon_clock_out'
+        )
+        ->join('work_schedules', 'work_schedules.user_id', '=', 'users.id')
+        ->where('users.id', $id)
+        ->firstOrFail();
+    }
+
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class);
     }
 }

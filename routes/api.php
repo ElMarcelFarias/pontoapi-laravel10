@@ -31,10 +31,14 @@ Route::group(['middleware' => ['jwt']], function () {
 Route::group(['middleware' => ['jwt', 'admin']], function () {
     Route::post('/logout', [JWTAuthController::class, 'logout']);
     Route::post('/register', [JWTAuthController::class, 'register']);
-
-    // Rota protegida para o download do relatório
-    Route::get('/download-report/{fileName}', [AttendanceReportController::class, 'downloadReport'])->name('download.report');
-    
     Route::post('/attendance-report', [AttendanceRecordController::class, 'generateAttendanceReport']);
+
+    Route::put('/user/{id}', [JWTAuthController::class, 'update']);
+
+    Route::get('/user/{id}', [JWTAuthController::class, 'getUser']);
+    Route::get('/user', [JWTAuthController::class, 'getAllUsers']);
+    Route::get('/download-report/{fileName}', [AttendanceReportController::class, 'downloadReport'])->name('download.report');
+
+    Route::delete('/user/{id}', [JWTAuthController::class, 'destroy']);
 });
 

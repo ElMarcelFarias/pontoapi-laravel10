@@ -43,7 +43,7 @@
             @foreach ($attendanceRecords as $record)
                 <tr>
                 <td>{{ $record->user_id }}</td>
-                <td>{{ $user->name }}</td>
+                <td>{{ $record->name }}</td>
                 <td>{{ \Carbon\Carbon::parse($record->date)->format('d/m/Y') }}</td>
 
                 <td>

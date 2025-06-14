@@ -82,12 +82,14 @@ class AttendanceRecord extends Model
     {
         return self::select(
                 'attendance_records.*',
+                'users.name',
                 'clock_dailies.morning_clock_in',
                 'clock_dailies.morning_clock_out',
                 'clock_dailies.afternoon_clock_in',
                 'clock_dailies.afternoon_clock_out'
             )
             ->join('clock_dailies', 'attendance_records.clock_daily_id', '=', 'clock_dailies.id')
+            ->join('users', 'attendance_records.user_id', '=', 'users.id')
             ->whereDate('attendance_records.date', now()->toDateString())
             ->get();
     }

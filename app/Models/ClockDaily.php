@@ -71,7 +71,6 @@ class ClockDaily extends Model
             ->whereDate('created_at', now()->toDateString())
             ->first();
         
-
         foreach ($clockFields as $field) {
             if (self::isWithinTolerance($currentTime, $workSchedule->$field, $tolerance)) {
                 if ($clockDaily) {
