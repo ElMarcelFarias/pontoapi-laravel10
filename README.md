@@ -104,6 +104,20 @@ Requisitos
 As rotas da API estão documentadas em documentacao_rotas_api.
 [Documentação da API](https://github.com/ElMarcelFarias/pontoapi-laravel10/blob/master/documentacao_rotas_api.md)
 
+Documentacao das rotas com Swagger
+
+```sh
+docker pull docker.swagger.io/swaggerapi/swagger-ui
+```
+
+Subir o container:
+
+```sh
+docker run -p 90:8080 -e SWAGGER_JSON=/tmp/openapi-resolved.json -v $(pwd):/tmp docker.swagger.io/swaggerapi/swagger-ui
+```
+
+Acesse em [Documentacao Swagger](http://localhost:90/)
+
 Para acessar as rotas protegidas, envie o header:
 
 ```sh

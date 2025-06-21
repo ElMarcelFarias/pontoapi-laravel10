@@ -1,0 +1,665 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "API de Registro de Ponto",
+    "description": "API para controle de ponto com autenticação JWT e geração de relatórios em PDF.",
+    "contact": {
+      "name": "Suporte ao Desenvolvedor - Marcel Leite de Farias",
+      "url": "https://www.linkedin.com/in/marcel-leite-de-farias/",
+      "email": "marcel.leitefarias@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8989/api",
+      "description": "Servidor Local"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "Autentica o usuário e retorna o token JWT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/login_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Token JWT retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao tentar autenticar",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Failed to login"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clockin": {
+      "post": {
+        "summary": "Registra a batida de ponto",
+        "responses": {
+          "200": {
+            "description": "Registro salvo/atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistroPontoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de batida de ponto",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Clock-in not completed",
+                  "message": "The user has not yet clocked in for today."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error",
+                  "message": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/today-records": {
+      "get": {
+        "summary": "Retorna o registro de ponto do dia atual",
+        "responses": {
+          "200": {
+            "description": "Registros retornados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodayRecordsResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registros não encontrados",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "No attendance records found",
+                  "message": "There are no attendance records for today."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error",
+                  "message": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/register": {
+      "post": {
+        "summary": "Registra um novo usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário registrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação ou criação de usuário",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Validation failed",
+                  "message": {
+                    "email": ["The email has already been taken."]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error",
+                  "message": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/logout": {
+      "post": {
+        "summary": "Efetua logout do sistema",
+        "responses": {
+          "204": {
+            "description": "Logout realizado com sucesso"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/{id}": {
+      "put": {
+        "summary": "Atualiza os dados de um usuário",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado"
+          },
+          "422": {
+            "description": "Erro de validação",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Erro de validação",
+                  "errors": {
+                    "email": ["O campo email já está em uso."]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao atualizar o usuário",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Erro ao atualizar o usuário",
+                  "error": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Exclui um usuário",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário excluído"
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Usuário não encontrado."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao excluir o usuário",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Erro ao excluir o usuário.",
+                  "error": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Lista todos os usuários",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar os usuários",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Erro ao buscar os usuários.",
+                  "error": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/attendance-report": {
+      "post": {
+        "summary": "Gera o relatório em PDF dos registros do dia",
+        "responses": {
+          "200": {
+            "description": "Relatório gerado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceReportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autorizado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Unauthorized"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nenhum registro de ponto encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "No attendance records found",
+                  "message": "There are no attendance records."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno ao gerar relatório",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error",
+                  "message": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/download-report/{fileName}": {
+      "get": {
+        "summary": "Faz download de um relatório PDF gerado",
+        "parameters": [
+          {
+            "name": "fileName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF baixado"
+          },
+          "404": {
+            "description": "Arquivo não encontrado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "File not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno ao baixar o arquivo",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Internal Server Error",
+                  "message": "Mensagem do erro"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LoginResponse_data"
+          }
+        }
+      },
+      "RegisterUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "password_confirmation": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "schedule_type": {
+            "type": "string"
+          },
+          "interval": {
+            "type": "integer"
+          },
+          "morning_clock_in": {
+            "type": "string"
+          },
+          "morning_clock_out": {
+            "type": "string"
+          },
+          "afternoon_clock_in": {
+            "type": "string"
+          },
+          "afternoon_clock_out": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterUserResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/RegisterUserResponse_data"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "RegistroPontoResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/RegistroPonto"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "RegistroPonto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "date": {
+            "type": "string"
+          },
+          "morning_clock_in": {
+            "type": "string",
+            "nullable": true
+          },
+          "morning_clock_out": {
+            "type": "string",
+            "nullable": true
+          },
+          "afternoon_clock_in": {
+            "type": "string",
+            "nullable": true
+          },
+          "afternoon_clock_out": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TodayRecordsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RegistroPonto"
+            }
+          }
+        }
+      },
+      "AttendanceReportResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AttendanceReportResponse_data"
+          },
+          "download_url": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "login_body": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse_data": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          },
+          "role": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RegisterUserResponse_data": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "AttendanceReportResponse_data": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "pdf_file": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
