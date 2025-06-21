@@ -4,7 +4,7 @@
     "title": "API de Registro de Ponto",
     "description": "API para controle de ponto com autenticação JWT e geração de relatórios em PDF.",
     "contact": {
-      "name": "Suporte ao Desenvolvedor - Marcel Leite de Farias",
+      "name": "Dev - Marcel Leite de Farias",
       "url": "https://www.linkedin.com/in/marcel-leite-de-farias/",
       "email": "marcel.leitefarias@gmail.com"
     },
@@ -16,10 +16,22 @@
       "description": "Servidor Local"
     }
   ],
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "Rotas acessíveis apenas por usuários com permissão de administrador autenticados com JWT."
+    },
+    {
+      "name": "Usuário",
+      "description": "Rotas acessíveis a todos usuários autenticados com JWT."
+    }
+  ],
   "paths": {
     "/login": {
       "post": {
+        "tags": ["Admin", "Usuário"],
         "summary": "Autentica o usuário e retorna o token JWT",
+        "description": "Esta rota realiza a autenticação de um usuário previamente cadastrado no sistema. É necessário fornecer um endereço de e-mail e uma senha válidos registrados no banco de dados. Se as credenciais forem corretas, a API retornará um token JWT que deverá ser utilizado para autenticar as próximas requisições protegidas.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -66,7 +78,9 @@
     },
     "/clockin": {
       "post": {
+        "tags": ["Usuário"],
         "summary": "Registra a batida de ponto",
+        "description": "Esta rota é destinada exclusivamente a usuários com o papel \"user\", e tem como finalidade registrar a batida de ponto de acordo com a jornada cadastrada previamente na rota /register.\n\nCada usuário possui um horário definido para as batidas de ponto, com os seguintes campos:\n- morning_clock_in\n- morning_clock_out\n- afternoon_clock_in\n- afternoon_clock_out\n\nAlém disso, é configurado um intervalo de tolerância (interval) em minutos — geralmente 15 ou 30 — que define a janela permitida para a batida.\n\nExemplo:\nSe o usuário configurou um interval de 15 minutos e o horário de entrada pela manhã (morning_clock_in) estiver definido para 07:00, ele poderá registrar a batida entre 06:45 e 07:15.\n\nO sistema identifica automaticamente, com base no horário atual, qual período está sendo registrado.",
         "responses": {
           "200": {
             "description": "Registro salvo/atualizado",
@@ -110,7 +124,9 @@
     },
     "/today-records": {
       "get": {
+        "tags": ["Usuário"],
         "summary": "Retorna o registro de ponto do dia atual",
+        "description": "Esta rota retorna todos os registros de ponto do dia atual referentes ao usuário autenticado.\n\nÉ possível visualizar as batidas realizadas durante o dia, como entrada e saída da manhã e da tarde, conforme a jornada cadastrada.\n\nCaso o usuário ainda não tenha registrado nenhum ponto no dia, será retornado um erro com status 404.",
         "responses": {
           "200": {
             "description": "Registros retornados com sucesso",
@@ -154,7 +170,9 @@
     },
     "/register": {
       "post": {
+        "tags": ["Admin"],
         "summary": "Registra um novo usuário",
+        "description": "Esta rota permite o cadastro de novos usuários no sistema e é acessível apenas por usuários com o papel de administrador (admin).\n\nAlguns campos importantes devem ser preenchidos corretamente:\n- `role`: define o tipo de usuário. Os valores aceitos são apenas \"admin\" ou \"user\" (em formato string).\n- `morning_clock_in`\n- `morning_clock_out`\n- `afternoon_clock_in`\n- `afternoon_clock_out`\n\nOs campos de jornada devem ser fornecidos como strings no formato \"HH:MM\" (ex: \"08:00\").\n\nEsses dados serão utilizados para validar os horários de batida de ponto nas demais rotas do sistema.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -210,7 +228,9 @@
     },
     "/logout": {
       "post": {
+        "tags": ["Admin", "Usuário"],
         "summary": "Efetua logout do sistema",
+        "description": "Esta rota realiza o logout do usuário autenticado com base no token JWT fornecido na requisição.\n\nAo chamar esta rota, o token atual será invalidado, encerrando a sessão do usuário no sistema.\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "responses": {
           "204": {
             "description": "Logout realizado com sucesso"
@@ -225,7 +245,9 @@
     },
     "/user/{id}": {
       "put": {
+        "tags": ["Admin"],
         "summary": "Atualiza os dados de um usuário",
+        "description": "Esta rota permite que um administrador atualize os dados de um usuário existente com base no ID informado na URL.\n\nOs dados enviados no corpo da requisição devem seguir o mesmo padrão da rota de cadastro (/register), incluindo os horários da jornada e o campo de role (\"admin\" ou \"user\").\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "parameters": [
           {
             "name": "id",
@@ -283,7 +305,9 @@
         ]
       },
       "delete": {
+        "tags": ["Admin"],
         "summary": "Exclui um usuário",
+        "description": "Esta rota permite que um administrador exclua permanentemente um usuário do sistema com base no ID informado na URL.\n\nCaso o usuário não seja encontrado, será retornado um erro com status 404.\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "parameters": [
           {
             "name": "id",
@@ -331,7 +355,9 @@
     },
     "/user": {
       "get": {
+        "tags": ["Admin"],
         "summary": "Lista todos os usuários",
+        "description": "Esta rota retorna todos os usuários cadastrados no sistema, de forma paginada.\n\nSomente administradores têm permissão para acessar essa rota.\n\nA resposta inclui os dados dos usuários, como nome, e-mail, papel (role) e horários da jornada.\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "responses": {
           "200": {
             "description": "Lista de usuários",
@@ -368,7 +394,9 @@
     },
     "/attendance-report": {
       "post": {
+        "tags": ["Admin"],
         "summary": "Gera o relatório em PDF dos registros do dia",
+        "description": "Esta rota é responsável por gerar o relatório diário de registros de ponto de todos os usuários do sistema.\n\nAo ser executada, ela compila os dados de batidas de ponto do dia atual e gera um arquivo PDF, que é salvo no diretório do sistema.\n\nEm seguida, um link temporário é disponibilizado na resposta, permitindo a visualização e o download do relatório gerado.\n\nApenas administradores têm permissão para acessar esta funcionalidade.\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "responses": {
           "200": {
             "description": "Relatório gerado",
@@ -422,7 +450,9 @@
     },
     "/download-report/{fileName}": {
       "get": {
+        "tags": ["Admin"],
         "summary": "Faz download de um relatório PDF gerado",
+        "description": "Esta rota permite que o administrador visualize ou baixe um relatório em PDF que foi previamente gerado pela rota /attendance-report.\n\nO nome do arquivo (`fileName`) deve ser informado como parâmetro na URL. A rota busca o arquivo no diretório onde os relatórios são armazenados e retorna o conteúdo para visualização ou download.\n\nSe o arquivo não for encontrado, um erro 404 será retornado.\n\nRequer autenticação via token no cabeçalho (bearerAuth).",
         "parameters": [
           {
             "name": "fileName",

@@ -24,12 +24,11 @@ Route::post('/login', [JWTAuthController::class, 'login']);
 
 Route::group(['middleware' => ['jwt']], function () {
     Route::post('/clockin', [ClockDailyController::class, 'registerClockIn']);
-
+    Route::post('/logout', [JWTAuthController::class, 'logout']);
     Route::get('/today-records', [AttendanceRecordController::class, 'getTodayRecords']);
 });
 
 Route::group(['middleware' => ['jwt', 'admin']], function () {
-    Route::post('/logout', [JWTAuthController::class, 'logout']);
     Route::post('/register', [JWTAuthController::class, 'register']);
     Route::post('/attendance-report', [AttendanceRecordController::class, 'generateAttendanceReport']);
 
